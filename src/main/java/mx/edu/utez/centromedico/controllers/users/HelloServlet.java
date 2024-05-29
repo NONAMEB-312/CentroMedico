@@ -1,28 +1,50 @@
 package mx.edu.utez.centromedico.controllers.users;
 
-import java.io.*;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import mx.edu.utez.centromedico.models.user.DaoUser;
+import mx.edu.utez.centromedico.models.user.User;
 
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.*;
 
-@WebServlet(name = "helloServlet", value = "/hello-servlet")
+import java.io.IOException;
+
+@WebServlet(name = "users", urlPatterns = {"/users/login"})
 public class HelloServlet extends HttpServlet {
-    private String message;
 
-    public void init() {
-        message = "Hello World!";
-    }
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String correo = request.getParameter("correo");
+        String contrasenia = request.getParameter("contrasenia");
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/html");
+        DaoUser daoUser = new DaoUser();
+        User user = daoUser.loadUserByUsernameAndPassword(correo, contrasenia);
 
-        // Hello
-        PrintWriter out = response.getWriter();
-        out.println("<html><body>");
-        out.println("<h1>" + message + "</h1>");
-        out.println("</body></html>");
-    }
+        if (user != null) {
+            request.getSession().setAttribute("user", user);
 
-    public void destroy() {
-    }
+            // Redirige a la página correspondiente según el rol del usuario
+            String role = user.getRol().getTipo();
+            switch (role) {
+                case "Admin":
+                    response.sendRedirect(request.getContextPath() + "/admin.jsp");
+                    break;
+                case "Medico":
+                    response.sendRedirect(request.getContextPath() + "/medico.jsp");
+                    break;
+                case "Recepcionista":
+                    response.sendRedirect(request.getContextPath() + "/recepcionista.jsp");
+                    break;
+                default:
+                    response.sendRedirect(request.getContextPath() + "/users/login");
+                    break;
+            }
+        } else {
+            request.setAttribute("errorMessage", "Invalid credentials");
+            request.getRequestDispatcher("index.jsp").forward(request, response);
+        }
+    }   
 }
