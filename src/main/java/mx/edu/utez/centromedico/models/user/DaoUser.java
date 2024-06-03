@@ -11,6 +11,7 @@ public class DaoUser {
     private Connection conn;
     private PreparedStatement pstm;
     private ResultSet rs;
+    private CallableStatement cs;
 
     public User loadUserByUsernameAndPassword(String correo, String contrasenia) {
         try {
@@ -46,6 +47,69 @@ public class DaoUser {
         return null;
     }
 
+    public int registrarUsuario(String correo, String contrasenia, String tipo, String nombre, String apaterno, String amaterno, String cedula, String especialidad, String domicilio) {
+
+        int idUsuario = -1;
+        try {
+            // Establecer la conexión
+            conn = new MySQLConnection().connect();
+
+            // Preparar la llamada al procedimiento almacenado
+            String sql = "{ CALL RegistrarUsuario(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) }";
+            cs = conn.prepareCall(sql);
+
+            // Establecer los parámetros de entrada
+            cs.setString(1, correo);
+            cs.setString(2, contrasenia);
+            cs.setString(3, tipo);
+            cs.setString(4, nombre);
+            cs.setString(5, apaterno);
+            cs.setString(6, amaterno);
+            cs.setString(7, cedula); // puede ser null
+            cs.setString(8, especialidad); // puede ser null
+            cs.setString(9, domicilio); // puede ser null
+
+            // Registrar el parámetro de salida
+            cs.registerOutParameter(10, Types.INTEGER);
+
+            // Ejecutar el procedimiento almacenado
+            cs.execute();
+
+            // Obtener el valor del parámetro de salida
+            idUsuario = cs.getInt(10);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Cerrar recursos
+            if (cs != null) {
+                try {
+                    cs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return idUsuario;
+    }
+        //este es para hacer la prueba de registrar un nuevo usuario
+    /*public static void main(String[] args) {
+        DaoUser dao = new DaoUser();
+        int idUsuario = dao.registrarUsuario("doctor@example.com", "password123", "medico", "John", "Doe", "Smith", "123456", "Cardiology", "123 Main St");
+        System.out.println("New Usuario ID: " + idUsuario);
+
+        int idRecepcionista = dao.registrarUsuario("recepcionista@example.com", "password123", "recepcionista", "Jane", "Doe", "Smith", null, null, null);
+        System.out.println("New Recepcionista ID: " + idRecepcionista);
+    }*/
+
     public void close() {
         try {
             if (conn != null) conn.close();
@@ -55,4 +119,6 @@ public class DaoUser {
             Logger.getLogger(DaoUser.class.getName()).log(Level.SEVERE, "Error closing resources: " + e.getMessage(), e);
         }
     }
+
+
 }

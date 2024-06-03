@@ -11,7 +11,7 @@ import mx.edu.utez.centromedico.models.user.User;
 
 import java.io.IOException;
 
-@WebServlet(name = "users", urlPatterns = {"/users/login"})
+@WebServlet(name = "users", urlPatterns = {"/users/login", "/users/index"})
 public class HelloServlet extends HttpServlet {
 
     @Override
@@ -39,12 +39,12 @@ public class HelloServlet extends HttpServlet {
                     response.sendRedirect(request.getContextPath() + "/recepcionista.jsp");
                     break;
                 default:
-                    response.sendRedirect(request.getContextPath() + "/users/login");
+                    response.sendRedirect(request.getContextPath() + "/index.jsp");
                     break;
             }
         } else {
             request.setAttribute("errorMessage", "Invalid credentials");
             request.getRequestDispatcher("index.jsp").forward(request, response);
         }
-    }   
+    }
 }
