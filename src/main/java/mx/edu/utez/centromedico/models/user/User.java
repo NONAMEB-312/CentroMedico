@@ -4,21 +4,28 @@ import mx.edu.utez.centromedico.models.rol.Rol;
 
 public class User {
     private Long idUsuario;
-    private int Rol_idRol;
-    private String Correo;
-    private String Contrasenia;
+    private int rolIdRol;  // Cambio de nombre
+    private String correo;  // Cambio de nombre
+    private String contrasenia;  // Cambio de nombre
+    private String nombre;  // Cambio de nombre
     private Rol rol;
 
+    // Constructor sin argumentos
     public User() {
     }
 
-    public User(Long idUsuario, int rol_idRol, String correo, String contrasenia, Rol rol) {
+    // Constructor con argumentos
+    public User(Long idUsuario, int rolIdRol, String correo, String contrasenia, String nombre, Rol rol) {
         this.idUsuario = idUsuario;
-        Rol_idRol = rol_idRol;
-        Correo = correo;
-        Contrasenia = contrasenia;
+        this.rolIdRol = rolIdRol;
+        this.correo = correo;
+        this.contrasenia = contrasenia;
+        this.nombre = nombre;
         this.rol = rol;
     }
+
+    // Getters y setters
+
 
     public Long getIdUsuario() {
         return idUsuario;
@@ -28,28 +35,36 @@ public class User {
         this.idUsuario = idUsuario;
     }
 
-    public int getRol_idRol() {
-        return Rol_idRol;
+    public int getRolIdRol() {
+        return rolIdRol;
     }
 
-    public void setRol_idRol(int rol_idRol) {
-        Rol_idRol = rol_idRol;
+    public void setRolIdRol(int rolIdRol) {
+        this.rolIdRol = rolIdRol;
     }
 
     public String getCorreo() {
-        return Correo;
+        return correo;
     }
 
     public void setCorreo(String correo) {
-        Correo = correo;
+        this.correo = correo;
     }
 
     public String getContrasenia() {
-        return Contrasenia;
+        return contrasenia;
     }
 
     public void setContrasenia(String contrasenia) {
-        Contrasenia = contrasenia;
+        this.contrasenia = contrasenia;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public Rol getRol() {
