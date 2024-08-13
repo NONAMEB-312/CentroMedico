@@ -354,6 +354,49 @@ END //
 
 DELIMITER ;
 
+-- procedimiento para actualizar un usuario
+
+drop procedure ActualizarUsuario;
+
+DELIMITER //
+
+CREATE PROCEDURE ActualizarUsuario(
+    IN p_idUsuario INT,
+    IN p_correo VARCHAR(45),
+    IN p_contrasenia VARCHAR(45),
+    IN p_nombre VARCHAR(45),
+    IN p_apaterno VARCHAR(45),
+    IN p_amaterno VARCHAR(45),
+    IN p_cedula VARCHAR(45),
+    IN p_especialidad VARCHAR(45),
+    IN p_domicilio VARCHAR(45)
+)
+BEGIN
+    -- Update the user in the Usuario table
+    UPDATE Usuario
+    SET Correo = p_correo,
+        Contrasenia = p_contrasenia
+    WHERE idUsuario = p_idUsuario;
+
+    -- Update the user in the corresponding table based on the role
+    IF EXISTS (SELECT 1 FROM Medicos WHERE Usuario_idUsuario = p_idUsuario) THEN
+        UPDATE Medicos
+        SET NombreMedico = p_nombre,
+            Apaterno = p_apaterno,
+            Amaterno = p_amaterno,
+            Cedula = p_cedula,
+            Especialidad = p_especialidad,
+            Domicilio = p_domicilio
+        WHERE Usuario_idUsuario = p_idUsuario;
+    ELSE
+        UPDATE Recepcionista
+        SET NombreRecep = CONCAT(p_nombre, ' ', p_apaterno, ' ', p_amaterno)
+        WHERE Usuario_idUsuario = p_idUsuario;
+    END IF;
+END //
+
+DELIMITER ;
+
 
 
 DESCRIBE Usuario;
